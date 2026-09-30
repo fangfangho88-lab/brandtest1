@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>品牌生命力测试 · Living Brand Creation Method™</title>
+<style>
+:root{
+  --paper:#ffffff;
+  --ink:#151515;
+  --muted:#77746f;
+  --line:#d9d7d2;
+  --soft:#f7f6f3;
+  --accent:#1b1b1b;
+  --coral:#ef7d63;
+  --lav:#d8c8e5;
+  --mint:#b9ded0;
+  --blue:#c4dbe6;
+  --yellow:#efe4a9;
+  --mist:#f1eee8;
+  --apple: -apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',Arial,sans-serif;
+  --serif: var(--apple);
+  --sans: var(--apple);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);overflow:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{height:100vh;position:relative;background:#fff}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(4%);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.screen.active{opacity:1;pointer-events:auto;transform:translateX(0)}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 44px;border-bottom:1px solid rgba(20,20,20,.08);flex:0 0 auto}
+.brandmark{font-family:var(--serif);font-size:16px;letter-spacing:.04em}
+.topmeta{font-size:11px;color:#6f6c67;letter-spacing:.08em}
+.home{overflow:hidden}
+.home-content{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);gap:7vw;align-items:center;flex:1;padding:5vh 8vw 8vh}
+.kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6e6a65;margin-bottom:28px}
+.home h1{font-family:var(--serif);font-weight:400;font-size:clamp(46px,6.6vw,92px);line-height:1.02;letter-spacing:-.045em;margin:0 0 26px;max-width:720px}
+.home-lead{font-family:var(--serif);font-size:clamp(18px,2vw,28px);line-height:1.45;max-width:610px;margin:0 0 34px;color:#2c2c2a}
+.meta-rule{width:190px;border-top:1px solid #232323;margin:28px 0 16px}
+.home-meta{font-size:12px;letter-spacing:.09em;color:#55524d}
+.primary{display:inline-flex;align-items:center;justify-content:center;gap:18px;border:1px solid #161616;background:#161616;color:#fff;padding:13px 24px;min-width:150px;margin-top:30px;letter-spacing:.04em;font-size:13px;transition:transform .2s ease,background .2s ease}
+.primary:hover{transform:translateY(-2px);background:#000}
+.arrow{font-size:16px;line-height:1}
+.image-placeholder{height:min(61vh,660px);min-height:390px;border:1px solid #dbd9d4;background:linear-gradient(145deg,#fbfbfa,#f0efec);position:relative;overflow:hidden}
+.image-placeholder::before{content:"";position:absolute;inset:10% 10% 0 18%;background:linear-gradient(130deg,transparent 0 15%,rgba(20,20,20,.06) 15.2% 16%,transparent 16.3%),linear-gradient(165deg,transparent 0 50%,rgba(20,20,20,.05) 50.2% 50.7%,transparent 51%),linear-gradient(115deg,rgba(255,255,255,.9),rgba(255,255,255,.15))}
+.image-placeholder::after{content:"VISUAL FIELD / REPLACE LATER";position:absolute;bottom:20px;left:22px;font-size:9px;letter-spacing:.2em;color:#8a8781}
+.image-upload{position:absolute;top:14px;right:14px;border:1px solid #c7c5c0;background:rgba(255,255,255,.86);padding:7px 10px;font-size:10px;letter-spacing:.05em;color:#5b5853;z-index:2}
+.image-upload input{display:none}
+.bottom-note{display:flex;justify-content:space-between;align-items:flex-end;padding:0 8vw 28px;font-size:10px;color:#77736d;letter-spacing:.03em}
+
+.test-shell{flex:1;display:flex;flex-direction:column;min-height:0}
+.progress-row{display:flex;align-items:center;gap:16px;padding:24px 44px 0}
+.progress-track{height:1px;background:#e2e0db;flex:1;position:relative}
+.progress-fill{position:absolute;left:0;top:0;height:1px;background:#111;transition:width .45s ease}
+.progress-count{font-size:11px;white-space:nowrap;color:#696660;letter-spacing:.1em}
+.question-wrap{flex:1;display:grid;place-items:center;padding:4vh 8vw 4vh;min-height:0}
+.question-card{width:min(980px,100%);min-height:66vh;display:flex;flex-direction:column;justify-content:center;position:relative;transform-origin:center left;transition:transform .5s cubic-bezier(.2,.85,.2,1),opacity .35s ease}
+.question-card.flip-out{transform:perspective(1400px) rotateY(-8deg) translateX(-2%);opacity:0}
+.question-card.flip-in{animation:pageIn .58s cubic-bezier(.2,.85,.2,1)}
+@keyframes pageIn{0%{transform:perspective(1400px) rotateY(8deg) translateX(2%);opacity:0}100%{transform:perspective(1400px) rotateY(0) translateX(0);opacity:1}}
+.section-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#79756f;margin-bottom:18px}
+.question-title{font-family:var(--serif);font-weight:400;font-size:clamp(38px,5vw,72px);line-height:1.12;letter-spacing:-.035em;max-width:920px;margin:0 0 34px}
+.options{border-top:1px solid var(--line);margin-top:14px}
+.option{width:100%;display:grid;grid-template-columns:46px 1fr 20px;align-items:center;gap:10px;background:#fff;border:0;border-bottom:1px solid var(--line);text-align:left;padding:18px 8px 18px 0;transition:background .2s ease,padding .2s ease}
+.option:hover{background:#faf9f7;padding-left:8px}
+.option.selected{background:#f4f3ef;padding-left:8px}
+.option-number{font-family:var(--serif);font-size:15px;color:#5e5b56}
+.option-text{font-size:14px;color:#262623}
+.option-dot{width:13px;height:13px;border:1px solid #5e5c57;border-radius:50%;position:relative;justify-self:end}
+.option.selected .option-dot{border-color:#111;background:#111}
+.option.selected .option-dot::after{content:"";position:absolute;inset:3px;border-radius:50%;background:#fff}
+.question-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:26px}
+.ghost{border:0;background:transparent;color:#68655f;padding:8px 0;font-size:12px}
+.next{border:1px solid #161616;background:#161616;color:#fff;padding:10px 20px;font-size:12px;letter-spacing:.04em;min-width:118px;transition:opacity .2s ease,transform .2s ease}
+.next:disabled{opacity:.35;cursor:not-allowed}
+.next:not(:disabled):hover{transform:translateY(-2px)}
+.question-footer{padding:0 44px 18px;display:flex;justify-content:space-between;font-size:9px;color:#848079;letter-spacing:.05em}
+
+.generating{align-items:center;justify-content:center;background:#fff}
+.g-wrap{text-align:center;width:min(520px,86vw)}
+.spinner{width:46px;height:46px;border:1px solid #1c1c1c;border-right-color:transparent;border-radius:50%;margin:0 auto 34px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.g-title{font-family:var(--serif);font-size:34px;line-height:1.3;font-weight:400;margin:0 0 18px}
+.g-copy{font-size:12px;color:#6e6b66;line-height:1.8}
+.g-list{margin:26px auto 0;width:250px;text-align:left;font-size:11px;line-height:2.2;color:#4c4944}
+.g-list span{display:inline-block;width:18px}
+
+.result{overflow:auto}
+.result-body{padding:20px 5vw 56px;max-width:1440px;width:100%;margin:0 auto}
+.type-strip{display:flex;gap:12px;align-items:stretch;margin:6px 0 26px;flex-wrap:wrap}
+.type-swatch{min-width:135px;flex:1;padding:13px 14px;border:1px solid rgba(0,0,0,.12);position:relative;min-height:70px;background:var(--c)}
+.type-swatch.active{outline:2px solid #111;outline-offset:2px}
+.type-swatch b{font-family:var(--serif);font-size:14px;font-weight:400;display:block;margin-bottom:5px}
+.type-swatch span{font-size:10px;color:#4c4944}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:22px;margin-bottom:22px}
+.hero-card{background:var(--coral);min-height:300px;padding:30px;position:relative;overflow:hidden}
+.hero-card .tiny{font-size:10px;letter-spacing:.12em;color:#4c1f19;text-transform:uppercase}
+.hero-card h2{font-family:var(--serif);font-size:clamp(48px,6vw,86px);font-weight:400;line-height:1;margin:28px 0 18px;letter-spacing:-.045em}
+.hero-card p{max-width:590px;font-size:13px;line-height:1.7;color:#4a2b25;margin:0}
+.big-letter{position:absolute;right:16px;bottom:-28px;font-family:var(--serif);font-size:210px;line-height:1;color:rgba(255,255,255,.25)}
+.radar-card{border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;min-height:300px;padding:18px}
+.radar-svg{width:100%;max-width:420px;height:auto}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
+.panel{border-top:1px solid #222;padding-top:15px}
+.panel h3{font-family:var(--serif);font-size:24px;font-weight:400;margin:0 0 16px}
+.panel p{font-size:12px;color:#5f5c56;line-height:1.8;margin:0 0 12px}
+.metric-list{display:grid;gap:8px}
+.metric{display:grid;grid-template-columns:38px 1fr 50px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #e7e5e0;font-size:11px}
+.metric .m-num{color:#77736e;font-family:var(--serif)}
+.metric .bar{height:2px;background:#e9e7e1;position:relative}
+.metric .bar i{display:block;height:2px;background:#222}
+.metric .m-val{text-align:right;color:#5b5853}
+.short-panel{background:#f7efeb;border:1px solid #ead7d0;padding:22px}
+.short-panel h3{font-size:22px;margin-bottom:10px}
+.short-panel .issue{font-family:var(--serif);font-size:27px;line-height:1.35;color:#30221e;margin:10px 0 14px}
+.cta{background:#151515;color:#fff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.cta strong{font-family:var(--serif);font-weight:400;font-size:18px}
+.cta button{border:1px solid rgba(255,255,255,.8);background:transparent;color:#fff;padding:9px 15px;font-size:12px}
+.result-footer{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;font-size:9px;color:#7f7b74;letter-spacing:.05em;padding-top:20px}.tech-credit{justify-self:end;color:#9a968f;white-space:nowrap;letter-spacing:.08em}
+.capture-hint{justify-self:center;color:#9a968f;white-space:nowrap;letter-spacing:.08em;opacity:.9}
+.capture-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,12px);background:rgba(18,18,18,.92);color:#fff;padding:10px 16px;font-size:11px;letter-spacing:.05em;z-index:40;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;border-radius:999px;backdrop-filter:blur(8px)}
+.capture-toast.show{opacity:1;transform:translate(-50%,0)}
+.capture-busy{cursor:progress!important}
+.longpress-target{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@media(max-width:760px){.result-footer{grid-template-columns:1fr;gap:8px}.capture-hint,.tech-credit{justify-self:start}}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(4px);display:grid;place-items:center;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.modal.open{opacity:1;pointer-events:auto}
+.modal-box{width:min(520px,92vw);background:#fff;padding:32px;border:1px solid #d9d7d2;box-shadow:0 24px 80px rgba(0,0,0,.14)}
+.modal-box h3{font-family:var(--serif);font-size:32px;font-weight:400;margin:0 0 12px}
+.modal-box p{font-size:12px;color:#6d6963;line-height:1.7}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+.modal-actions button{padding:10px 16px;font-size:12px}
+
+@media (max-width: 860px){
+  html,body{overflow:auto}.app{min-height:100vh;height:auto}.screen{position:relative;min-height:100vh;height:auto;display:none;opacity:1;pointer-events:auto;transform:none}.screen.active{display:flex}
+  .topbar{padding:0 20px}.home-content{grid-template-columns:1fr;gap:30px;padding:38px 20px 30px}.home h1{font-size:54px}.image-placeholder{height:46vh;min-height:280px}.bottom-note{padding:0 20px 20px}.question-wrap{padding:28px 20px}.question-card{min-height:72vh}.question-title{font-size:42px}.progress-row{padding:18px 20px 0}.question-footer{padding:0 20px 16px}.hero-grid,.info-grid{grid-template-columns:1fr}.result-body{padding:15px 20px 50px}.hero-card{min-height:280px}.type-swatch{min-width:calc(50% - 8px)}
+  .result-footer{grid-template-columns:1fr;justify-items:start}.tech-credit{justify-self:start}
+}
+
+.stage-shell{flex:1;display:flex;align-items:center;justify-content:center;padding:6vh 8vw}
+.stage-inner{width:min(980px,100%)}
+.stage-kicker{font-size:11px;letter-spacing:.15em;color:#77736d;text-transform:uppercase;margin-bottom:22px}
+.stage-title{font-family:var(--serif);font-weight:400;font-size:clamp(42px,5.5vw,74px);line-height:1.08;letter-spacing:-.035em;margin:0 0 16px}
+.stage-copy{max-width:680px;color:#62605b;font-size:13px;line-height:1.8;margin:0 0 34px}
+.stage-options{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.stage-option{border:1px solid #d7d5d0;background:#fff;text-align:left;padding:22px 20px;min-height:160px;transition:transform .2s ease,background .2s ease,border-color .2s ease}
+.stage-option:hover{transform:translateY(-3px);background:#faf9f6}
+.stage-option.selected{border-color:#111;background:#f4f3ef;box-shadow:inset 0 0 0 1px #111}
+.stage-option .stage-no{font-family:var(--serif);font-size:14px;color:#77736d;margin-bottom:24px}
+.stage-option strong{display:block;font-family:var(--serif);font-size:25px;font-weight:400;margin-bottom:8px}
+.stage-option span{display:block;font-size:11px;color:#6e6a64;line-height:1.6}
+.stage-foot{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#807c76;letter-spacing:.04em}
+.result-kicker{font-size:10px;letter-spacing:.14em;color:#77736d;text-transform:uppercase;margin:22px 0 12px}
+.stage-chip{display:inline-flex;align-items:center;border:1px solid rgba(0,0,0,.12);padding:6px 9px;font-size:10px;background:#fff;margin-top:12px}
+.profile-copy{font-family:var(--serif);font-size:23px;line-height:1.5;margin:10px 0 0;max-width:960px}
+.tension-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0 28px}
+.tension-card{border:1px solid #ddd9d2;background:#fff;padding:24px 22px;position:relative}
+.tension-card.core{background:#f7efeb;border-color:#ead7d0}
+.tension-card.secondary{background:#fbfaf8}
+.tension-tag{font-size:9px;letter-spacing:.13em;color:#7d7973;text-transform:uppercase;margin-bottom:12px}
+.tension-title{font-family:var(--serif);font-size:28px;line-height:1.25;font-weight:400;margin:0 0 16px;color:#30221e}
+.tension-card p{font-size:12px;line-height:1.8;color:#5f5b55;margin:0 0 13px}
+.tension-label{font-size:9px;letter-spacing:.08em;color:#7a756e;margin:16px 0 6px;text-transform:uppercase}
+.reframe-q{border-top:1px solid #e2ddd6;margin-top:16px;padding-top:15px;font-family:var(--serif);font-size:17px;line-height:1.55;color:#24211f}
+.stable-card{background:#f7f6f3;border:1px solid #dfddd8;padding:26px 24px;margin:24px 0 28px}
+.stable-card h3{font-family:var(--serif);font-size:27px;font-weight:400;margin:0 0 12px}
+.stable-card p{font-size:12px;line-height:1.8;color:#5f5b55;margin:0}
+.dim-explain{font-size:10px;line-height:1.6;color:#77736c;margin-top:4px}
+.keyline{height:1px;background:#d9d6d1;margin:20px 0}
+@media (max-width: 860px){
+  .stage-shell{padding:36px 20px}.stage-options{grid-template-columns:1fr}.stage-option{min-height:120px}.stage-foot{align-items:flex-start;gap:18px;flex-direction:column}.tension-grid{grid-template-columns:1fr}.profile-copy{font-size:20px}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="screen active home" id="homeScreen">
+    <header class="topbar">
+      <div class="brandmark">Living Brand Creation Method™</div>
+      <div class="topmeta">品牌生命力测试　/　36 QUESTIONS</div>
+    </header>
+    <div class="home-content">
+      <div>
+        <div class="kicker">LIVING BRAND / BRAND VITALITY TEST</div>
+        <h1>你的品牌，<br>为什么值得存在？</h1>
+        <p class="home-lead">一个好的品牌，不只是被看见，<br>而是能在时间中持续生长。</p>
+        <div class="meta-rule"></div>
+        <div class="home-meta">36 道题　/　约 8 分钟　/　完成后获得品牌生命力画像</div>
+        <button class="primary" id="startBtn">开始测试 <span class="arrow">→</span></button>
+      </div>
+      <div class="image-placeholder" id="homeImage">
+        <label class="image-upload">替换配图<input type="file" id="imageInput" accept="image/*"></label>
+      </div>
+    </div>
+    <div class="bottom-note"><span>这不是品牌好坏的评分，而是帮助你找到品牌当前的结构关系与生长问题。</span><span>Different brands.<br>Different life force.</span></div>
+  </section>
+
+
+  <section class="screen" id="stageScreen">
+    <header class="topbar">
+      <div class="brandmark">Living Brand Creation Method™</div>
+      <div class="topmeta">BRAND VITALITY TEST　/　ABOUT YOUR BRAND</div>
+    </header>
+    <div class="stage-shell">
+      <div class="stage-inner">
+        <div class="stage-kicker">STEP 01 / BRAND STAGE</div>
+        <h2 class="stage-title">你的品牌，<br>现在处于哪个阶段？</h2>
+        <p class="stage-copy">这个选择不会计入品牌生命力评分，它只用于解释你的结构状态。相同的问题，发生在不同阶段，意味着不同的品牌命题。</p>
+        <div class="stage-options" id="stageOptions">
+          <button class="stage-option" data-stage="初创期"><div class="stage-no">01</div><strong>初创期</strong><span>正在寻找市场位置，验证产品、用户与商业模型。</span></button>
+          <button class="stage-option" data-stage="成长期"><div class="stage-no">02</div><strong>成长期</strong><span>已有真实业务基础，正在寻找下一阶段的增长方式。</span></button>
+          <button class="stage-option" data-stage="成熟期"><div class="stage-no">03</div><strong>成熟期</strong><span>已有相对稳定的业务系统，需要面对新的增长与进化。</span></button>
+        </div>
+        <div class="stage-foot">
+          <span>选择最符合你当前判断的一项即可。</span>
+          <button class="next" id="stageNextBtn" disabled>进入36道测试　→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="questionScreen">
+    <header class="topbar">
+      <div class="brandmark">Living Brand Creation Method™</div>
+      <div class="topmeta">BRAND VITALITY TEST</div>
+    </header>
+    <div class="test-shell">
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="progress-count" id="progressCount">01 / 36</div></div>
+      <div class="question-wrap">
+        <div class="question-card" id="questionCard">
+          <div class="section-label" id="questionSection">SOUL / 品牌灵魂</div>
+          <h2 class="question-title" id="questionText"></h2>
+          <div class="options" id="options"></div>
+          <div class="question-bottom">
+            <button class="ghost" id="backBtn">← 上一题</button>
+            <button class="next" id="nextBtn" disabled>下一题　→</button>
+          </div>
+        </div>
+      </div>
+      <div class="question-footer"><span id="questionHint">让品牌真正开始生长的，是你对它为什么存在的回答。</span><span>Living Brand Creation Method™</span></div>
+    </div>
+  </section>
+
+  <section class="screen generating" id="generatingScreen">
+    <div class="g-wrap">
+      <div class="spinner"></div>
+      <h2 class="g-title">正在为你生成<br>品牌生命力画像…</h2>
+      <div class="g-copy">我们正在把 36 个回答重新组织成一张品牌结构地图。</div>
+      <div class="g-list"><div><span>✓</span>分析品牌内核</div><div><span>✓</span>分析商业命题</div><div><span>✓</span>分析价值承载</div><div><span>✓</span>分析品牌生态</div><div><span id="gDot">○</span>生成最终报告</div></div>
+    </div>
+  </section>
+
+
+  <section class="screen result longpress-target" id="resultScreen">
+    <header class="topbar">
+      <div class="brandmark">Living Brand Creation Method™</div>
+      <div class="topmeta">品牌生命力测试　/　深度诊断报告</div>
+    </header>
+    <div class="result-body" id="resultBody" title="长按结果页保存为图片">
+      <div class="type-strip" id="typeStrip"></div>
+      <div class="hero-grid">
+        <div class="hero-card" id="heroCard">
+          <div class="tiny">你的品牌生命力画像</div>
+          <h2 id="resultType">高生命力型</h2>
+          <p id="resultSummary"></p>
+          <div class="stage-chip" id="resultStage">品牌阶段：—</div>
+          <div class="big-letter" id="bigLetter">F</div>
+        </div>
+        <div class="radar-card"><svg class="radar-svg" viewBox="0 0 480 390" id="radarSvg" aria-label="品牌生命力雷达图"></svg></div>
+      </div>
+
+      <div class="result-kicker">01 / PROFILE</div>
+      <div class="panel" style="padding-top:0;border-top:1px solid #222">
+        <div class="profile-copy" id="profileCopy"></div>
+      </div>
+
+      <div class="result-kicker">02 / YOUR STRENGTH STRUCTURE</div>
+      <div class="info-grid">
+        <div class="panel">
+          <h3>你的优势结构</h3>
+          <div class="metric-list" id="strengths"></div>
+          <div class="keyline"></div>
+          <p id="strengthNote"></p>
+        </div>
+        <div class="panel short-panel" style="background:#fff;border:1px solid #dedbd5">
+          <h3>品牌阶段</h3>
+          <div class="issue" id="stageInterpretation" style="font-size:24px"></div>
+          <p id="stageCopy"></p>
+        </div>
+      </div>
+
+      <div class="result-kicker">03 / STRUCTURAL TENSIONS</div>
+      <div id="tensionArea"></div>
+
+      <div class="result-kicker">04 / NEXT QUESTION</div>
+      <div class="panel" style="padding-top:18px;border-top:1px solid #222">
+        <h3 style="margin-bottom:8px">现在最值得带走的问题</h3>
+        <p id="nextQuestionCopy" style="font-family:var(--serif);font-size:24px;line-height:1.55;color:#24211f;max-width:940px"></p>
+      </div>
+
+      <div class="cta" style="margin-top:28px">
+        <div><strong>想继续深入你的品牌结构？</strong><div style="font-size:11px;color:#b6b2ad;margin-top:4px">60分钟品牌诊断 · 从看见问题进入重新定义</div></div>
+        <button id="ctaBtn">进入品牌诊断　→</button>
+      </div>
+      <div class="result-footer"><span>本结果为结构诊断 V1.2 原型算法：固定关系规则 + 品牌阶段解释。</span><span class="capture-hint">长按结果页可保存为图片</span><button class="ghost" id="restartBtn">重新测试 ↗</button><span class="tech-credit">来自甲叔AI技术支持</span></div>
+    </div>
+  </section>
+</div>
+
+<div id="captureToast" class="capture-toast" role="status" aria-live="polite"></div>
+<div class="modal" id="modal"><div class="modal-box"><h3>进入品牌诊断</h3><p>这一处现在先作为产品原型的转化入口。后续可以直接连接你的预约页面、微信、Calendly、飞书表单或支付页面。</p><div class="modal-actions"><button id="closeModal">先看看</button><button class="next" id="demoBooking">预约入口　→</button></div></div></div>
+
+<script>
+const questions = [
+ {d:'Soul', label:'SOUL / 品牌灵魂', t:'如果不考虑短期赚钱，我依然清楚自己为什么想创造这个品牌。'},
+ {d:'Soul', label:'SOUL / 品牌灵魂', t:'我能够清楚回答：“为什么这件事必须由我来做？”'},
+ {d:'Soul', label:'SOUL / 品牌灵魂', t:'如果市场上已经出现很多类似品牌，我依然能说清楚自己的品牌为什么值得存在。'},
+ {d:'Soul', label:'SOUL / 品牌灵魂', t:'当商业压力和效率要求与品牌最初的价值发生冲突时，我知道哪些东西不能被牺牲。'},
+ {d:'Reframe', label:'REFRAME / 商业命题重构', t:'如果明天不能继续经营现在的产品、门店或空间，我依然能够说清楚自己的品牌真正想创造什么。'},
+ {d:'Reframe', label:'REFRAME / 商业命题重构', t:'我能够清楚区分：什么是品牌真正要创造的价值，什么只是目前承载这个价值的产品或业务形式。'},
+ {d:'Reframe', label:'REFRAME / 商业命题重构', t:'我们在思考业务时，通常不会被“原来的行业规则”“现有物业”“现有产品”完全限制。'},
+ {d:'Reframe', label:'REFRAME / 商业命题重构', t:'当发现现有业务模式限制了品牌的发展时，我们愿意重新定义“自己到底在做什么生意”。'},
+ {d:'Foundation', label:'FOUNDATION / 品牌基础', t:'我们拥有实现当前品牌定位所需要的核心资源和能力。'},
+ {d:'Foundation', label:'FOUNDATION / 品牌基础', t:'我们的产品、供应链、团队或服务能力能够真正支撑品牌所承诺的体验。'},
+ {d:'Foundation', label:'FOUNDATION / 品牌基础', t:'我们已经有可追溯的真实证据证明核心商业假设成立，如真实付费、复购、签约、稳定转化或持续需求。'},
+ {d:'Foundation', label:'FOUNDATION / 品牌基础', t:'我们的创始人能力、团队能力和品牌所处的品类之间具有较好的匹配度。'},
+ {d:'Opportunity', label:'OPPORTUNITY / 机会定义', t:'我们能够清楚说出：为什么现在是做这个品牌的好时机。'},
+ {d:'Opportunity', label:'OPPORTUNITY / 机会定义', t:'我们对目标用户正在发生的变化有具体而不是模糊的理解。'},
+ {d:'Opportunity', label:'OPPORTUNITY / 机会定义', t:'我们知道自己与竞争者真正不同在哪里，而不仅仅是“调性不同”。'},
+ {d:'Opportunity', label:'OPPORTUNITY / 机会定义', t:'创始人自身拥有的一些资源、经历或能力，恰好能够与当前市场机会形成结合。'},
+ {d:'Business', label:'BUSINESS / 商业模型', t:'我们非常清楚谁是真正愿意为品牌价值付钱的人，以及他们为什么愿意付钱。'},
+ {d:'Business', label:'BUSINESS / 商业模型', t:'品牌与用户之间不仅有一次交易，还有持续复购、持续使用或持续关系的可能。'},
+ {d:'Business', label:'BUSINESS / 商业模型', t:'我们能够清楚解释：品牌如何赚钱，以及收入增长与品牌价值增长之间的关系。'},
+ {d:'Business', label:'BUSINESS / 商业模型', t:'目前的商业模型不会为了追求短期收入而持续消耗品牌本身的核心价值。'},
+ {d:'Culture', label:'CULTURE / 文化转译', t:'我们的品牌拥有真实的文化、地方、生活方式、创始人经历或价值观来源，而不是后来编出来的故事。'},
+ {d:'Culture', label:'CULTURE / 文化转译', t:'我们能够用一个明确的情绪或感受描述：消费者接触品牌后，我希望他获得什么。'},
+ {d:'Culture', label:'CULTURE / 文化转译', t:'我们的文化理念能够真正进入产品、服务、内容或体验，而不仅仅停留在品牌文案里。'},
+ {d:'Culture', label:'CULTURE / 文化转译', t:'我们的品牌表达不是依赖一个故事或一个视觉元素，而是由产品、内容、体验和文化资源共同构成。'},
+ {d:'Universe', label:'BRAND UNIVERSE / 品牌宇宙', t:'我们的品牌拥有一套稳定而有辨识度的语言系统，包括命名、视觉、内容、行为或产品表达。'},
+ {d:'Universe', label:'BRAND UNIVERSE / 品牌宇宙', t:'当品牌进入新的产品或场景时，我们有明确判断哪些变化仍然属于品牌，哪些变化会偏离品牌核心。'},
+ {d:'Universe', label:'BRAND UNIVERSE / 品牌宇宙', t:'品牌的视觉设计、空间、产品、内容和活动之间能够共同表达同一个品牌世界，而不是各自独立。'},
+ {d:'Universe', label:'BRAND UNIVERSE / 品牌宇宙', t:'消费者接触品牌时，获得的不只是一个产品，而是能够进入一种独特的品牌体验或世界。'},
+ {d:'Value', label:'VALUE ARCHITECTURE / 价值架构', t:'如果明天不能卖我们现在最核心的产品，我依然能够说出至少三种新的价值载体。'},
+ {d:'Value', label:'VALUE ARCHITECTURE / 价值架构', t:'除了当前产品或门店之外，我们已经考虑过其他可以承载品牌核心价值的产品、服务、内容或场景。'},
+ {d:'Value', label:'VALUE ARCHITECTURE / 价值架构', t:'这些新的价值载体中，至少有一些具备独立产生收入的可能。'},
+ {d:'Value', label:'VALUE ARCHITECTURE / 价值架构', t:'我们有意识地让每一次产品、服务或合作，不仅产生当次收入，还能沉淀用户关系、内容、渠道、数据或合作网络。'},
+ {d:'Ecosystem', label:'ECOSYSTEM / 品牌生态', t:'我们知道什么样的场域、人群和品牌伙伴最适合自己，而不是单纯追求最大的流量。'},
+ {d:'Ecosystem', label:'ECOSYSTEM / 品牌生态', t:'过去的一次品牌曝光、合作或内容动作，能够自然带来下一次机会，而不是每次都重新开始。'},
+ {d:'Evolution', label:'EVOLUTION / 品牌进化', t:'我们非常清楚品牌哪些东西必须保持稳定，哪些东西可以持续变化。'},
+ {d:'Evolution', label:'EVOLUTION / 品牌进化', t:'即使未来行业、渠道或原始产品发生变化，我们仍然相信这个品牌可以继续存在并创造新的价值。'}
+];
+
+const dimMeta={
+ Soul:{name:'品牌灵魂',short:'Soul',strength:'精神内核清晰，品牌有不依赖单一载体的核心。'},
+ Reframe:{name:'商业命题重构',short:'Reframe',strength:'能够跳出原有行业、产品或物业定义，重新理解自己在做什么。'},
+ Foundation:{name:'品牌基础',short:'Foundation',strength:'拥有把品牌承诺转化为产品、团队和真实业务的基础。'},
+ Opportunity:{name:'机会定义',short:'Opportunity',strength:'能够识别市场变化、时机窗口与自身资源的结合。'},
+ Business:{name:'商业模型',short:'Business',strength:'价值、用户、收入和增长之间已经形成较清晰的商业关系。'},
+ Culture:{name:'文化转译',short:'Culture',strength:'品牌拥有真实文化来源，并能把它变成持续的判断标准。'},
+ Universe:{name:'品牌宇宙',short:'Brand Universe',strength:'不同触点能够形成一致、可识别、可进入的品牌世界。'},
+ Value:{name:'价值架构',short:'Value Architecture',strength:'核心价值具备横向或纵向延展的潜在承载空间。'},
+ Growth:{name:'生态与进化',short:'Ecosystem / Evolution',strength:'能通过外部关系获得新机会，并让品牌持续生长。'}
+};
+
+const types={
+ A:{name:'灵魂缺位型',color:'#d8c8e5',summary:'品牌正在寻找自己的起点。当前最需要的不是继续包装，而是重新回答：为什么这件事值得由你来做，以及哪些价值不能被短期效率牺牲。',deep:'你的品牌可能已经拥有产品、团队或市场动作，但精神内核还没有成为长期决策的依据。品牌因此容易跟随机会变化，却难以形成稳定的长期复利。'},
+ B:{name:'载体依赖型',color:'#b9ded0',summary:'品牌已经拥有值得发展的价值，但这些价值仍然高度依赖当前的产品、门店或空间。下一阶段的关键，是确认核心价值未来还有多少承载空间。',deep:'你的品牌世界可能已经形成，但增长方式仍然与当前载体绑定。真正值得观察的是：当未来需要变化时，价值是否能够横向进入新类别，或纵向在一个核心载体里继续做深。'},
+ C:{name:'表达超前型',color:'#c4dbe6',summary:'品牌的表达力已经跑在业务基础之前。视觉、故事或内容可能很完整，但供应链、产品、商业模型等仍需要跟上，才能让品牌真正落地。',deep:'你的品牌已经让人看见了一个有吸引力的世界，但这个世界还需要更多真实的业务、产品与用户证据来承接。表达越强，越需要确保兑现能力同步成长。'},
+ D:{name:'商业清晰型',color:'#efe4a9',summary:'品牌已经建立了相对清晰的商业基础与增长逻辑。下一阶段更值得关注的是：如何让文化和品牌表达真正成为商业价值，而不只是包装层。',deep:'你的商业系统相对清楚，但品牌长期复利还取决于文化内核是否开始成为选择与取舍的标准。'},
+ E:{name:'品牌潜伏型',color:'#f1eee8',summary:'品牌已经具备一定基础，但生态关系与持续进化能力尚未完全打开。你的下一阶段可能不是重做品牌，而是让合作、人群、场域与内容开始彼此发生关系。',deep:'品牌已经有一定生命迹象，但还需要更多真实外部关系，让新的价值被发现、验证并沉淀下来。'},
+ F:{name:'高生命力型',color:'#ef7d63',summary:'品牌已经形成相对完整的生命力结构：价值清晰、商业可行、表达一致，并具备继续生成新载体与新关系的基础。接下来更重要的是保持核心，同时持续创造。',deep:'你的品牌已经不是靠单点能力在前进，而是多个结构之间开始形成互相支撑。下一阶段的关键不是继续堆能力，而是让系统保持开放、持续进化。'}
+};
+
+const diagnoses = [
+ {id:'soul-reframe', needs:s=>s.Soul>=4.0&&s.Reframe<=3.4, title:'心有其愿，身困其形', priority:9, impact:3, breakthrough:2, root:5,
+  profile:'你的品牌已经拥有比较清晰的精神内核。创始人知道自己为什么做，也知道希望创造什么样的价值，但目前的产品、业务或空间形态仍然决定着品牌在市场中的竞争方式。',
+  mechanism:'品牌灵魂还没有被重新转译成新的商业命题。文化与价值观停留在“为什么做”，却没有进一步回答：我们真正应该在市场中做什么？因此，品牌仍然被原有产品、行业、物业或者商业模式定义。',
+  outcome:'品牌容易重新掉回同质竞争。文化价值只能停留在故事、视觉或表达层面。为了获得增长，品牌可能不得不持续投入营销、流量和渠道成本去竞争，而不是通过新的价值结构获得竞争优势。',
+  question:'如果不能继续经营现在的产品、空间或业务，你真正想在市场中创造的价值是什么?'},
+ {id:'reframe-soul', needs:s=>s.Soul<=3.4&&s.Reframe>=4.0, title:'形已落地，未是所愿', priority:9, impact:3, breakthrough:2, root:5,
+  profile:'你的品牌对市场机会和商业定位的反应很快，也能够重新定义业务命题，甚至可能在短时间内找到不错的市场位置。但品牌背后还缺少一个足够稳定的精神内核。',
+  mechanism:'Reframe能够带来跃迁，但没有Soul，新的商业命题很难沉淀成长期品牌资产。品牌每次进入新的机会，都更像重新完成一次0→1，而不是在过去积累的认知、信任和文化上继续做1→N。',
+  outcome:'品牌可能短期崛起很快，也可能很会赚“快钱”，但后续容易出现增长断层。每次新的增长都需要重新寻找机会、重新定义自己、重新获得用户，因此难以形成长期复利与品牌溢价。',
+  question:'如果未来不再有新的市场机会可以追逐，什么东西仍然值得你坚持十年?'},
+ {id:'reframe-opportunity', needs:s=>s.Reframe>=4.0&&s.Opportunity<=3.4, title:'命题已经被重新定义，但市场窗口尚未成立', priority:8, impact:2, breakthrough:2, root:4,
+  profile:'你的团队很擅长跳出原有行业和业务规则思考，能够快速提出新的商业命题，但新的命题未必恰好落在一个成熟的市场窗口中。',
+  mechanism:'Reframe解决“我们可以重新定义什么”，Opportunity解决“市场此刻是否正在发生足以承接这种重新定义的变化”。一个好的商业模型需要出现在恰当的时间，也需要用户需求与生态利益能够承接。',
+  outcome:'品牌可能出现“命题很新，但市场反应没有同步发生”的情况。差异化很强，但用户行为、生态利益或商业条件不足以支撑它。',
+  question:'这个新的商业命题，是市场正在等待的机会，还是我们为了差异化而创造出来的概念?'},
+ {id:'opportunity-foundation', needs:s=>s.Opportunity>=4.0&&s.Foundation<=3.4, priority:7, impact:3, breakthrough:3, root:3,
+  title:'机会已经出现，但承接能力尚未跟上',
+  stage:{
+   '初创期':{profile:'你已经看到了一个真实而有吸引力的机会，但核心团队当前的能力、资源或产品基础还不足以直接承接它。',mechanism:'初创团队试错成本有限。机会本身再好，也需要判断为了获得它需要补足多少能力，以及这个缺口是否值得承担。',outcome:'如果忽略现实承接能力，机会可能反而变成过高的资源消耗。',question:'为了抓住这个机会，我们真正需要成为一个什么样的团队？这个变化值得吗？'},
+   '成长期':{profile:'新的机会已经出现，而原有团队和业务基础正在逐渐成为增长瓶颈。',mechanism:'这时Foundation不再只是“我现在有什么”，而开始意味着：我能不能为了下一阶段机会重新组织自己。',outcome:'如果组织仍然停留在原有能力结构，机会就可能变成增长的天花板。',question:'下一阶段真正限制我们的，是能力不足，还是我们还没有决定为了新的机会重新组织自己？'},
+   '成熟期':{profile:'新的市场空间已经出现，但组织能力仍然主要围绕原有业务结构运转。',mechanism:'成熟企业拥有更多资源和试错空间，Foundation不足未必意味着机会不能进入，而可能意味着组织是否愿意为了新的增长曲线重新配置能力。',outcome:'如果始终用旧组织承接新机会，企业可能错过新的增长窗口。',question:'如果这是下一轮增长机会，我们愿意改变原来的组织方式来承接它吗？'}
+  }},
+ {id:'foundation-user', needs:s=>s.Foundation>=4.0&&s.UserValue<=3.4, title:'不要把专业能力误认为用户价值', priority:6, impact:3, breakthrough:3, root:3,
+  profile:'你的团队拥有很强的专业能力、产品能力、供应链能力或行业经验，能够把产品和项目做得很好，但市场没有给予与这种能力相匹配的真实反馈。',
+  mechanism:'团队容易从“我擅长什么”直接推导“用户需要什么”。但能力只是创造价值的基础，不是价值成立的证明。真实付费、复购、增长，甚至竞争者开始模仿，才是更有效的市场信号。',
+  outcome:'品牌可能出现“东西越来越好，但生意没有同步变好”。团队一直在优化自己的能力，却没有真正确认市场是否愿意持续为这种能力付费。',
+  question:'如果把我们的专业能力全部放下，市场究竟愿意为什么东西付钱?'},
+ {id:'user-business', needs:s=>s.UserValue>=4.0&&s.Business<=3.4, title:'用户愿意买，不代表你的商业模型成立', priority:6, impact:3, breakthrough:3, root:2,
+  profile:'市场已经证明用户愿意为你的产品或服务付费，甚至出现复购和增长，但品牌的收入和利润还没有形成稳定的正向关系。',
+  mechanism:'先区分“暂时不赚钱”和“结构性不赚钱”。前者可能仍在建设基础设施、培养用户习惯或扩大网络效应；后者则可能说明商业模型本身存在利润天花板，或者后台成本、供应链和组织效率需要改变。',
+  outcome:'如果商业模型本身决定了利润天花板，继续扩大业务规模反而可能扩大问题；如果模型没有问题，则需要回到成本结构与经营效率。',
+  question:'我们现在面对的到底是“暂时还没赚钱”，还是“这个生意本身决定了未来也很难赚到钱”？'},
+ {id:'business-culture', needs:s=>s.Business>=4.0&&s.Culture<=3.4, title:'生意成立，不等于品牌成立。注入文化内核才能实现品牌复利', priority:7, impact:3, breakthrough:2, root:2,
+  profile:'你的商业模式已经成立，用户、渠道、供应链和盈利结构也比较成熟，但品牌还没有一个足够稳定的文化内核来帮助自己做长期判断。',
+  mechanism:'没有Culture之后，Business很容易从“什么符合品牌长期方向”变成“什么赚钱就做什么”。短期可以有效，但长期选择越来越多时，没有文化标准就难以判断什么值得坚持、什么应该拒绝。',
+  outcome:'商业可以增长，但增长很难稳定沉淀成品牌复利。每一次机会都可能是一场新的判断，而不是在过去品牌资产上的继续累积。',
+  question:'如果未来所有机会都摆在我们面前，什么东西会决定我们选择哪一些、拒绝哪一些？'},
+ {id:'culture-universe', needs:s=>s.Culture>=4.0&&s.Universe<=3.4, title:'文化不是自我表达，而是与用户建立共鸣的语言', priority:5, impact:2, breakthrough:3, root:2,
+  profile:'品牌拥有真实而明确的文化内核，但这些文化仍然主要存在于品牌自己的世界里，用户并没有真正进入这个世界。',
+  mechanism:'品牌很容易把文化表达变成创始人的故事、自己喜欢的视觉、自己认同的内容。真正的Brand Universe应该是一个用户可以进入、理解、共鸣并产生关系的世界。',
+  outcome:'品牌内部觉得自己很有文化，外部用户却未必能够感受到。文化越来越完整，但品牌与市场之间反而产生距离。',
+  question:'我们想表达的文化，有多少是在表达“我们是谁”，又有多少是在回答“用户为什么会在这里找到自己”？'},
+ {id:'universe-value', needs:s=>s.Universe>=4.0&&s.Value<=3.4, title:'Brand Universe 是否有足够系统的 Value Architecture 作为支撑', priority:5, impact:3, breakthrough:2, root:2,
+  profile:'品牌已经形成相对完整且有辨识度的世界，用户也能够在多个触点感受到“这是这个品牌”，但未来继续发展的价值承载空间仍需要被认真观察。',
+  mechanism:'Value Architecture不等于“产品越多越好”。它真正要判断的是：当品牌未来需要继续发展时，核心价值有没有横向或纵向继续生长的可能。',
+  outcome:'如果品牌宇宙很丰富，但价值承载空间过于单一，品牌未来一旦遇到当前业务的增长天花板，就可能发现：品牌想象得很大，生意真正能够承载它的空间却很窄。',
+  question:'如果未来我们需要继续增长，这个品牌的核心价值还可以在哪里继续生长？'},
+ {id:'ecosystem-evolution', needs:s=>s.Ecosystem>=4.0&&s.Evolution<=3.4, title:'合作不是目的，品牌能在每一次的合作中获得价值才是目的', priority:4, impact:2, breakthrough:3, root:1,
+  profile:'品牌已经拥有丰富的合作、场域、用户和外部机会，但几年之后回头看，品牌本身却没有发生明显变化。',
+  mechanism:'Ecosystem真正的价值不是合作数量，而是每一次进入生态之后，品牌有没有获得新的东西，并把这些东西沉淀下来。Soul和Culture决定什么值得合作、为什么合作、合作之后希望品牌发生什么。',
+  outcome:'品牌看起来非常活跃，却始终处在“不断做新的事情，但还是原来的自己”。生态越大，机会越多，却没有形成真正的品牌进化。',
+  question:'如果下一次合作结束之后，品牌必须比合作之前多获得一样东西，那会是什么？'}
+];
+
+const state={q:0,answers:Array(questions.length).fill(null),stage:null};
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active')}
+function renderQuestion(animate=false){
+ const q=questions[state.q];
+ $('questionSection').textContent=q.label;$('questionText').textContent=q.t;
+ $('progressCount').textContent=String(state.q+1).padStart(2,'0')+' / 36';
+ $('progressFill').style.width=((state.q+1)/36*100)+'%';
+ $('backBtn').style.visibility=state.q===0?'hidden':'visible';
+ $('nextBtn').textContent=state.q===35?'查看结果　→':'下一题　→';
+ $('nextBtn').disabled=state.answers[state.q]===null;
+ const opts=[['1','完全不符合'],['2','比较不符合'],['3','不确定'],['4','比较符合'],['5','非常符合']];
+ $('options').innerHTML=opts.map(([n,t])=>`<button class="option ${state.answers[state.q]==n?'selected':''}" data-v="${n}"><span class="option-number">${n}</span><span class="option-text">${t}</span><span class="option-dot"></span></button>`).join('');
+ document.querySelectorAll('.option').forEach(btn=>btn.addEventListener('click',()=>selectAnswer(Number(btn.dataset.v))));
+ if(animate){$('questionCard').classList.remove('flip-in');void $('questionCard').offsetWidth;$('questionCard').classList.add('flip-in')}
+}
+function selectAnswer(v){state.answers[state.q]=v;renderQuestion(false)}
+function next(){if(state.answers[state.q]===null)return;if(state.q<35){animateOut(()=>{state.q++;renderQuestion(true)})}else{showGenerating()}}
+function back(){if(state.q===0)return;animateOut(()=>{state.q--;renderQuestion(true)})}
+function animateOut(cb){$('questionCard').classList.remove('flip-in');$('questionCard').classList.add('flip-out');setTimeout(()=>{cb();$('questionCard').classList.remove('flip-out')},260)}
+function calcScores(){
+ const sums={Soul:[],Reframe:[],Foundation:[],Opportunity:[],Business:[],Culture:[],Universe:[],Value:[],Ecosystem:[],Evolution:[]};
+ questions.forEach((q,i)=>sums[q.d].push(state.answers[i]||3));
+ const scores={};
+ Object.keys(sums).forEach(k=>scores[k]=sums[k].reduce((a,b)=>a+b,0)/sums[k].length);
+ scores.Growth=(scores.Ecosystem+scores.Evolution)/2;
+ scores.UserValue=[state.answers[10]||3,state.answers[16]||3,state.answers[17]||3].reduce((a,b)=>a+b,0)/3;
+ return scores;
+}
+function classify(s){
+ const avg=[s.Soul,s.Reframe,s.Foundation,s.Opportunity,s.Business,s.Culture,s.Universe,s.Value,s.Growth].reduce((a,b)=>a+b,0)/9;
+ const min=Math.min(s.Soul,s.Reframe,s.Foundation,s.Opportunity,s.Business,s.Culture,s.Universe,s.Value,s.Growth);
+ const max=Math.max(s.Soul,s.Reframe,s.Foundation,s.Opportunity,s.Business,s.Culture,s.Universe,s.Value,s.Growth);
+ if(s.Soul<3.5 && s.Reframe<3.8) return 'A';
+ if(s.Value<3.5 && s.Soul>=3.8 && s.Culture>=3.8 && s.Universe>=3.7) return 'B';
+ if(s.Culture>=4.0 && s.Universe>=4.0 && (s.Foundation<3.7 || s.Business<3.7)) return 'C';
+ if(s.Foundation>=4.0 && s.Opportunity>=4.0 && s.Business>=4.0 && (s.Culture<4.0 || s.Universe<3.8)) return 'D';
+ if(avg>=3.7 && s.Growth<3.7) return 'E';
+ if(avg>=4.2 && min>=3.8 && max-min<=1.0) return 'F';
+ if(s.Soul<3.5) return 'A';
+ if(s.Value<3.5) return 'B';
+ if(s.Culture>=4 && s.Foundation<3.7) return 'C';
+ if(s.Business>=4 && s.Culture<3.9) return 'D';
+ return 'E';
+}
+function radarPath(values,cx=240,cy=194,r=125){return values.map((v,i)=>{const [x,y]=polar(cx,cy,r*(v/5),i*40);return (i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}).join(' ')+' Z'}
+function polar(cx,cy,r,angle){const a=(angle-90)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+function renderRadar(scores,type){const keys=['Soul','Reframe','Foundation','Opportunity','Business','Culture','Universe','Value','Growth'],svg=$('radarSvg');let html='';
+ [1,2,3,4,5].forEach(level=>{html+=`<polygon points="${keys.map((_,i)=>{const [x,y]=polar(240,194,125*(level/5),i*40);return `${x},${y}`}).join(' ')}" fill="none" stroke="#dcd9d4" stroke-width="1"/>`});
+ keys.forEach((k,i)=>{const [x,y]=polar(240,194,125,i*40),[tx,ty]=polar(240,194,151,i*40);html+=`<line x1="240" y1="194" x2="${x}" y2="${y}" stroke="#e6e3de"/><text x="${tx}" y="${ty}" font-size="9" fill="#67645e" text-anchor="middle" dominant-baseline="middle">${dimMeta[k].short}</text>`});
+ html+=`<path d="${radarPath(keys.map(k=>scores[k]))}" fill="${types[type].color}" fill-opacity=".30" stroke="#2d302e" stroke-width="1.4"/>`;
+ keys.forEach((k,i)=>{const [x,y]=polar(240,194,125*(scores[k]/5),i*40);html+=`<circle cx="${x}" cy="${y}" r="3" fill="#222"/><text x="${x}" y="${y-8}" font-size="8" fill="#44413c" text-anchor="middle">${scores[k].toFixed(1)}</text>`});
+ svg.innerHTML=html}
+function strengthList(scores){const keys=['Soul','Reframe','Foundation','Opportunity','Business','Culture','Universe','Value','Growth'];return keys.map(k=>[k,scores[k]]).sort((a,b)=>b[1]-a[1]).slice(0,3)}
+function typeStrip(type){const strip=[['A','灵魂缺位型'],['B','载体依赖型'],['C','表达超前型'],['D','商业清晰型'],['E','品牌潜伏型'],['F','高生命力型']];$('typeStrip').innerHTML=strip.map(([k,n])=>`<div class="type-swatch ${k===type?'active':''}" style="--c:${types[k].color}"><b>${k}　${n}</b><span>brand state</span></div>`).join('')}
+function diagFor(rule, scores){
+ const base={title:rule.title, profile:rule.profile, mechanism:rule.mechanism, outcome:rule.outcome, question:rule.question};
+ if(rule.stage){Object.assign(base, rule.stage[state.stage]||rule.stage['成长期']);}
+ return base;
+}
+function getTensions(scores){
+ const triggered=diagnoses.filter(r=>r.needs({...scores})).map(r=>({...r, content:diagFor(r,scores)}));
+ // V1.2 heuristic: prioritize root cause, then current business relevance, then lower-friction breakthrough.
+ triggered.sort((a,b)=>((b.root*3+b.impact*2+b.breakthrough)-(a.root*3+a.impact*2+a.breakthrough)));
+ if(!triggered.length)return {core:[],secondary:null};
+ const core=[triggered[0]];
+ if(triggered[1]){
+   const s1=triggered[0].root*3+triggered[0].impact*2+triggered[0].breakthrough;
+   const s2=triggered[1].root*3+triggered[1].impact*2+triggered[1].breakthrough;
+   if(Math.abs(s1-s2)<=2)core.push(triggered[1]);
+ }
+ const used=new Set(core.map(r=>r.id));
+ const secondary=triggered.find(r=>!used.has(r.id))||null;
+ return {core,secondary};
+}
+function stageCopy(){
+ return {
+  '初创期':'处在初创期时，最重要的是用最低的成本把机会、团队与用户价值连接起来。结构问题通常意味着：你正在判断“这件事值不值得做”，而不是马上把所有能力都补齐。',
+  '成长期':'处在成长期时，原本有效的能力开始遇到新的增长边界。结构问题更多意味着：旧的能力与新的机会是否需要重新组织。',
+  '成熟期':'处在成熟期时，业务基础已经成立，真正的挑战通常来自新的增长空间与新的品牌定义。结构问题意味着：组织是否有能力持续进化，而不是只把原来的生意做得更大。'
+ }[state.stage];
+}
+function buildResult(){
+ const s=calcScores(),type=classify(s),meta=types[type],{core,secondary}=getTensions(s);
+ $('resultType').textContent=meta.name;$('resultSummary').textContent=meta.summary;$('heroCard').style.background=meta.color;$('bigLetter').textContent=type;$('resultStage').textContent='品牌阶段：'+state.stage;
+ $('profileCopy').textContent=meta.deep;
+ $('stageInterpretation').textContent=state.stage+' · 你的诊断语境';$('stageCopy').textContent=stageCopy();
+ const strengths=strengthList(s);$('strengths').innerHTML=strengths.map(([k,v],i)=>`<div class="metric"><div class="m-num">0${i+1}</div><div><div style="margin-bottom:4px">${dimMeta[k].name}</div><div class="bar"><i style="width:${v/5*100}%"></i></div><div class="dim-explain">${dimMeta[k].strength}</div></div><div class="m-val">${v.toFixed(1)} / 5</div></div>`).join('');
+ $('strengthNote').textContent='这里展示的是当前结构里最具支撑力的三项能力。高分本身不是目的，关键在于它们是否真正支撑了其他部分的生长。';
+ const area=$('tensionArea');
+ if(!core.length){
+   area.innerHTML=`<div class="stable-card"><h3>目前没有显著的结构性矛盾</h3><p>你的9个维度之间没有形成我们定义的明显高低断层。当前更接近“结构稳定态”：没有一个问题足以被系统优先放大。这个结果不代表品牌没有成长空间，而是意味着下一阶段更值得观察新的机会会首先要求哪一部分发生变化。</p></div>`;
+   $('nextQuestionCopy').textContent='如果未来一年品牌只能发生一次重要变化，你希望改变的是哪个部分，以及为什么是它？';
+ } else {
+   area.innerHTML=`<div class="tension-grid">${core.map((r,i)=>{const c=r.content;return `<article class="tension-card core"><div class="tension-tag">核心结构矛盾 ${String(i+1).padStart(2,'0')}</div><h4 class="tension-title">${c.title}</h4><div class="tension-label">现象</div><p>${c.profile}</p><div class="tension-label">机制</div><p>${c.mechanism}</p><div class="tension-label">结果</div><p>${c.outcome}</p><div class="reframe-q">${c.question}</div></article>`}).join('')}</div>${secondary?`<article class="tension-card secondary"><div class="tension-tag">次级观察点</div><h4 class="tension-title">${secondary.content.title}</h4><p>${secondary.content.profile}</p><div class="reframe-q">值得继续留意：${secondary.content.question}</div></article>`:''}`;
+   $('nextQuestionCopy').textContent=core.length===1?core[0].content.question:core.map(r=>r.content.question).join('  /  ');
+ }
+ typeStrip(type);renderRadar(s,type);
+}
+function showGenerating(){show('generatingScreen');$('gDot').textContent='○';setTimeout(()=>{$('gDot').textContent='✓'},900);setTimeout(()=>{buildResult();show('resultScreen')},1500)}
+
+$('startBtn').onclick=()=>{state.stage=null;document.querySelectorAll('.stage-option').forEach(b=>b.classList.remove('selected'));$('stageNextBtn').disabled=true;show('stageScreen')};
+document.querySelectorAll('.stage-option').forEach(btn=>btn.addEventListener('click',()=>{state.stage=btn.dataset.stage;document.querySelectorAll('.stage-option').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');$('stageNextBtn').disabled=false}));
+$('stageNextBtn').onclick=()=>{if(!state.stage)return;state.q=0;state.answers=Array(questions.length).fill(null);show('questionScreen');renderQuestion(true)};
+$('nextBtn').onclick=next;$('backBtn').onclick=back;
+$('restartBtn').onclick=()=>{show('homeScreen');window.scrollTo(0,0)};
+$('ctaBtn').onclick=()=>$('modal').classList.add('open');$('closeModal').onclick=()=>$('modal').classList.remove('open');$('demoBooking').onclick=()=>{alert('这里后续接入你的真实预约/微信/支付入口。');$('modal').classList.remove('open')};
+$('imageInput').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('homeImage').style.backgroundImage=`url(${url})`;$('homeImage').style.backgroundSize='cover';$('homeImage').style.backgroundPosition='center';$('homeImage').style.backgroundColor='#eee'});
+
+// V1.3：结果页长按保存为图片（SVG foreignObject + Canvas，无第三方依赖）
+const captureState={timer:null,startX:0,startY:0};
+function showCaptureToast(msg,ms=1800){
+ const el=$('captureToast'); if(!el)return;
+ el.textContent=msg; el.classList.add('show');
+ clearTimeout(showCaptureToast._t);
+ showCaptureToast._t=setTimeout(()=>el.classList.remove('show'),ms);
+}
+function getPageCss(){
+ let css='';
+ for(const sheet of Array.from(document.styleSheets)){
+   try{css+=Array.from(sheet.cssRules||[]).map(r=>r.cssText).join('\\n')+'\\n';}catch(e){}
+ }
+ return css;
+}
+function downloadBlob(blob,filename){
+ const a=document.createElement('a');
+ const url=URL.createObjectURL(blob);
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1200);
+ showCaptureToast('图片已生成，可在下载中查看');
+}
+function saveResultAsImage(){
+ const source=$('resultScreen'); if(!source)return;
+ document.body.classList.add('capture-busy');
+ showCaptureToast('正在生成图片…',2400);
+ const width=Math.max(320,source.scrollWidth||source.offsetWidth);
+ const height=Math.max(320,source.scrollHeight||source.offsetHeight);
+ const scale=Math.min(2,Math.max(1,window.devicePixelRatio||1));
+ const clone=source.cloneNode(true);
+ clone.removeAttribute('id');
+ clone.style.position='relative';
+ clone.style.inset='auto';
+ clone.style.display='flex';
+ clone.style.opacity='1';
+ clone.style.pointerEvents='auto';
+ clone.style.transform='none';
+ clone.style.width=width+'px';
+ clone.style.height=height+'px';
+ clone.style.minHeight=height+'px';
+ clone.style.overflow='visible';
+ clone.style.background='#fff';
+ clone.querySelectorAll('button,input,textarea,select').forEach(el=>{el.style.pointerEvents='none';});
+ clone.querySelectorAll('.capture-toast,.modal').forEach(el=>el.remove());
+ const css=getPageCss();
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><foreignObject x="0" y="0" width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;background:#fff;overflow:hidden;"><style>${css}</style>${clone.outerHTML}</div></foreignObject></svg>`;
+ const svgBlob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+ const url=URL.createObjectURL(svgBlob);
+ const img=new Image();
+ img.onload=()=>{
+   try{
+     const canvas=document.createElement('canvas');
+     canvas.width=Math.round(width*scale);
+     canvas.height=Math.round(height*scale);
+     const ctx=canvas.getContext('2d');
+     ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+     ctx.setTransform(scale,0,0,scale,0,0);
+     ctx.drawImage(img,0,0,width,height);
+     canvas.toBlob(async png=>{
+       URL.revokeObjectURL(url);document.body.classList.remove('capture-busy');
+       if(!png){showCaptureToast('图片生成失败，请稍后重试');return;}
+       const filename=`品牌生命力测试_${new Date().toISOString().slice(0,10)}.png`;
+       const file=new File([png],filename,{type:'image/png'});
+       if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+         try{
+           await navigator.share({files:[file],title:'品牌生命力测试结果'});
+           showCaptureToast('已打开分享 / 保存面板');
+           return;
+         }catch(err){
+           if(err && err.name==='AbortError'){showCaptureToast('已取消');return;}
+         }
+       }
+       downloadBlob(png,filename);
+     },'image/png',.95);
+   }catch(err){
+     URL.revokeObjectURL(url);document.body.classList.remove('capture-busy');
+     console.error(err);showCaptureToast('图片生成失败，请稍后重试');
+   }
+ };
+ img.onerror=()=>{
+   URL.revokeObjectURL(url);document.body.classList.remove('capture-busy');
+   showCaptureToast('当前浏览器不支持直接生成图片，请使用系统截图');
+ };
+ img.src=url;
+}
+function startLongPress(e){
+ if(!$('resultScreen').classList.contains('active'))return;
+ if(e.pointerType==='mouse' && e.button!==0)return;
+ captureState.startX=e.clientX;captureState.startY=e.clientY;
+ clearTimeout(captureState.timer);
+ captureState.timer=setTimeout(saveResultAsImage,900);
+}
+function moveLongPress(e){
+ if(captureState.timer && (Math.abs(e.clientX-captureState.startX)>12 || Math.abs(e.clientY-captureState.startY)>12)){
+   clearTimeout(captureState.timer);captureState.timer=null;
+ }
+}
+function endLongPress(){clearTimeout(captureState.timer);captureState.timer=null;}
+const resultTarget=$('resultScreen');
+if(resultTarget){
+ resultTarget.addEventListener('pointerdown',startLongPress,{passive:true});
+ resultTarget.addEventListener('pointermove',moveLongPress,{passive:true});
+ resultTarget.addEventListener('pointerup',endLongPress,{passive:true});
+ resultTarget.addEventListener('pointercancel',endLongPress,{passive:true});
+ resultTarget.addEventListener('pointerleave',endLongPress,{passive:true});
+}
+
+document.addEventListener('keydown',e=>{if(!document.getElementById('questionScreen').classList.contains('active'))return;if(['1','2','3','4','5'].includes(e.key))selectAnswer(Number(e.key));if(e.key==='ArrowRight')next();if(e.key==='ArrowLeft')back();});
+renderQuestion(false);
+</script>
+</body>
+</html>
